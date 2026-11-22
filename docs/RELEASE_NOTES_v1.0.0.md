@@ -1,12 +1,12 @@
-# PocketSLM 1.0.0 — Final Release
+# PocketSLM 1.0.0 Beta
 
-This is the stable, final 1.0.0 build — not a beta or pre-release.
+This is a **beta / pre-release** build for testing and feedback — not a final stable release.
 
 Small language models, fully offline on an Android phone's CPU.
 
 ## Highlights
 
-- **Final 1.0.0 release** — stable, published as a full release (not a pre-release).
+- **Beta 1.0.0** — published as a pre-release for testing.
 - **Renamed from PocketLLM to PocketSLM** — it runs small (0.3B–3B) GGUF models.
 - **Arabic UI** — every string translated; RTL chat with mirrored lists, quotes and
   headings; a warning when you type Arabic with an English-focused model.
@@ -37,8 +37,10 @@ Small language models, fully offline on an Android phone's CPU.
 
 | File | SHA-256 |
 |---|---|
-| `app-release.apk` | `4a7b878f8ae65c1d6fd0202e98cbc7d24c7a2b5b308d402e4e7dce58eba634cd` |
-| `app-release.aab` | `a1227afa944ebe6a95b0c5836dbbbeeea871e96dadde119848aa9e148f583996` |
+| `app-release.apk` | `59a4d1cff88b30eb3b322005f4efdd1d10a972a54e3494f49dec343e29171f68` |
+| `app-release.aab` | `859d13b1b5a3744a11f28071869298daa69be61ff8c613c88c37591c581d5252` |
+
+Built from versionCode 3 / versionName `1.0.0-beta`.
 
 Signed with the PocketSLM release key (self-signed). Keep your keystore backed up:
 an update signed with a different key cannot replace this installation.

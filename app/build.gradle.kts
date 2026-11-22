@@ -29,8 +29,8 @@ android {
         applicationId = "com.pocketllm"
         minSdk = 26
         targetSdk = 37
-        versionCode = 2
-        versionName = "1.0.0"
+        versionCode = 3
+        versionName = "1.0.0-beta"
 
         // 1B+ GGUF models need a 64-bit address space; no armeabi-v7a on purpose.
         ndk {
