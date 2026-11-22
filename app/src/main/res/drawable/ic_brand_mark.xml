@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tightly-cropped version of ic_launcher_foreground (orbit + spark) for in-app use. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="60"
+    android:viewportHeight="60">
+
+    <!-- Orbit ring, open at the top like the launcher icon -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:pathData="M30,3a27,27 0 1,0 0.1,0" />
+
+    <!-- Four point spark -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,11 L36.5,23.5 L49,30 L36.5,36.5 L30,49 L23.5,36.5 L11,30 L23.5,23.5 Z" />
+</vector>
