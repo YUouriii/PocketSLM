@@ -1,9 +1,12 @@
-# PocketSLM 1.0.0
+# PocketSLM 1.0.0 — Final Release
+
+This is the stable, final 1.0.0 build — not a beta or pre-release.
 
 Small language models, fully offline on an Android phone's CPU.
 
 ## Highlights
 
+- **Final 1.0.0 release** — stable, published as a full release (not a pre-release).
 - **Renamed from PocketLLM to PocketSLM** — it runs small (0.3B–3B) GGUF models.
 - **Arabic UI** — every string translated; RTL chat with mirrored lists, quotes and
   headings; a warning when you type Arabic with an English-focused model.
