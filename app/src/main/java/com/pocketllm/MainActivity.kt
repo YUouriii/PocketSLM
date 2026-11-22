@@ -38,30 +38,34 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Keep the app's auto-load in sync with the benchmark configuration so
-        // the ChatScreen cannot reload the model with different ctx/KV/GPU settings.
-        if (intent?.getStringExtra("bench")?.isNotBlank() == true) {
-            Graph.benchMode = true
-            Graph.settings.update { s ->
-                s.copy(
-                    contextSize = intent?.getIntExtra("ctx", 0)?.takeIf { it > 0 } ?: s.contextSize,
-                    threads = intent?.getIntExtra("threads", 0)?.takeIf { it > 0 } ?: s.threads,
-                    kvQuant = intent?.getStringExtra("kv")?.takeIf { it.isNotBlank() } ?: s.kvQuant,
-                    gpuLayers = intent?.getIntExtra("gpu", -1)?.takeIf { it >= 0 } ?: s.gpuLayers,
-                )
+        // Development-only hooks. Release builds ignore these extras so a third
+        // party app cannot trigger benchmarks or change model/settings silently.
+        if (BuildConfig.DEBUG) {
+            // Keep the app's auto-load in sync with the benchmark configuration so
+            // the ChatScreen cannot reload a model with different ctx/KV/GPU settings.
+            if (intent?.getStringExtra("bench")?.isNotBlank() == true) {
+                Graph.benchMode = true
+                Graph.settings.update { s ->
+                    s.copy(
+                        contextSize = intent?.getIntExtra("ctx", 0)?.takeIf { it > 0 } ?: s.contextSize,
+                        threads = intent?.getIntExtra("threads", 0)?.takeIf { it > 0 } ?: s.threads,
+                        kvQuant = intent?.getStringExtra("kv")?.takeIf { it.isNotBlank() } ?: s.kvQuant,
+                        gpuLayers = intent?.getIntExtra("gpu", -1)?.takeIf { it >= 0 } ?: s.gpuLayers,
+                    )
+                }
             }
-        }
 
-        // Model switch hook used by automated on-device verification; a normal
-        // launch never passes this extra and keeps the existing selection flow.
-        intent?.getStringExtra("model")?.takeIf { it.isNotBlank() }?.let { modelId ->
-            Graph.settings.update { it.copy(activeModelId = modelId) }
-        }
-        intent?.getStringExtra("perf")?.takeIf { it.isNotBlank() }?.let { value ->
-            Graph.settings.update { it.copy(performancePreference = value) }
-        }
-        intent?.getStringExtra("mem")?.takeIf { it.isNotBlank() }?.let { value ->
-            Graph.settings.update { it.copy(memoryMode = value) }
+            // Model switch hook used by automated on-device verification; a normal
+            // launch never passes this extra and keeps the existing selection flow.
+            intent?.getStringExtra("model")?.takeIf { it.isNotBlank() }?.let { modelId ->
+                Graph.settings.update { it.copy(activeModelId = modelId) }
+            }
+            intent?.getStringExtra("perf")?.takeIf { it.isNotBlank() }?.let { value ->
+                Graph.settings.update { it.copy(performancePreference = value) }
+            }
+            intent?.getStringExtra("mem")?.takeIf { it.isNotBlank() }?.let { value ->
+                Graph.settings.update { it.copy(memoryMode = value) }
+            }
         }
 
         setContent {
@@ -88,29 +92,31 @@ class MainActivity : ComponentActivity() {
 
         // Developer hook: `am start ... --es bench <path>` loads a model and
         // generates a short reply, logging prompt and token throughput.
-        intent?.getStringExtra("bench")?.takeIf { it.isNotBlank() }?.let { path ->
-            val threads = intent?.getIntExtra("threads", 0)?.takeIf { it > 0 }
-            val ctx = intent?.getIntExtra("ctx", 0)?.takeIf { it > 0 }
-            val cancelMs = intent?.getIntExtra("cancelMs", 0)?.takeIf { it > 0 }
-            val kv = intent?.getStringExtra("kv")?.takeIf { it.isNotBlank() }
-            val gpu = intent?.getIntExtra("gpu", -1)?.takeIf { it >= 0 }
-            val trials = intent?.getIntExtra("trials", 1)?.coerceAtLeast(0) ?: 1
-            val warmup = intent?.getIntExtra("warmup", 0)?.coerceAtLeast(0) ?: 0
-            val sustainMs = intent?.getLongExtra("sustainMs", 0)?.takeIf { it > 0 } ?: 0L
-            val promptText = intent?.getStringExtra("prompt")?.takeIf { it.isNotBlank() }
-            val promptFile = intent?.getStringExtra("promptFile")?.takeIf { it.isNotBlank() }
-            val maxTokens = intent?.getIntExtra("maxTokens", 0)?.takeIf { it > 0 }
-            val temp = intent?.getFloatExtra("temp", -1f)?.takeIf { it >= 0f }
-            val topP = intent?.getFloatExtra("topP", -1f)?.takeIf { it in 0f..1f }
-            val topK = intent?.getIntExtra("topK", 0)?.takeIf { it > 0 }
-            val benchId = intent?.getStringExtra("benchId")?.takeIf { it.isNotBlank() }
-            val severe = intent?.getBooleanExtra("severe", false) == true
-            val cool = intent?.getBooleanExtra("cool", false) == true
-            lifecycleScope.launch {
-                runBenchmark(
-                    path, threads, ctx, cancelMs, kv, gpu, trials, warmup, sustainMs,
-                    promptText, promptFile, severe, cool, maxTokens, temp, topP, topK, benchId,
-                )
+        if (BuildConfig.DEBUG) {
+            intent?.getStringExtra("bench")?.takeIf { it.isNotBlank() }?.let { path ->
+                val threads = intent?.getIntExtra("threads", 0)?.takeIf { it > 0 }
+                val ctx = intent?.getIntExtra("ctx", 0)?.takeIf { it > 0 }
+                val cancelMs = intent?.getIntExtra("cancelMs", 0)?.takeIf { it > 0 }
+                val kv = intent?.getStringExtra("kv")?.takeIf { it.isNotBlank() }
+                val gpu = intent?.getIntExtra("gpu", -1)?.takeIf { it >= 0 }
+                val trials = intent?.getIntExtra("trials", 1)?.coerceAtLeast(0) ?: 1
+                val warmup = intent?.getIntExtra("warmup", 0)?.coerceAtLeast(0) ?: 0
+                val sustainMs = intent?.getLongExtra("sustainMs", 0)?.takeIf { it > 0 } ?: 0L
+                val promptText = intent?.getStringExtra("prompt")?.takeIf { it.isNotBlank() }
+                val promptFile = intent?.getStringExtra("promptFile")?.takeIf { it.isNotBlank() }
+                val maxTokens = intent?.getIntExtra("maxTokens", 0)?.takeIf { it > 0 }
+                val temp = intent?.getFloatExtra("temp", -1f)?.takeIf { it >= 0f }
+                val topP = intent?.getFloatExtra("topP", -1f)?.takeIf { it in 0f..1f }
+                val topK = intent?.getIntExtra("topK", 0)?.takeIf { it > 0 }
+                val benchId = intent?.getStringExtra("benchId")?.takeIf { it.isNotBlank() }
+                val severe = intent?.getBooleanExtra("severe", false) == true
+                val cool = intent?.getBooleanExtra("cool", false) == true
+                lifecycleScope.launch {
+                    runBenchmark(
+                        path, threads, ctx, cancelMs, kv, gpu, trials, warmup, sustainMs,
+                        promptText, promptFile, severe, cool, maxTokens, temp, topP, topK, benchId,
+                    )
+                }
             }
         }
     }
